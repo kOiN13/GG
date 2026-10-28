@@ -1,0 +1,35 @@
+
+def encrypt(text):
+    text = text.replace(" ", "").upper()
+
+    # Магический квадрат 3x3
+    magic = [
+        [8, 1, 6],
+        [3, 5, 7],
+        [4, 9, 2]
+    ]
+
+    # Дополняем текст до блоков по 9 символов
+    while len(text) % 9 != 0:
+        text += "Х"
+
+    result = ""
+
+    for start in range(0, len(text), 9):
+        block = text[start:start + 9]
+
+        # Размещаем символы по строкам квадрата
+        square = list(block)
+
+        # Считываем символы в порядке чисел
+        for number in range(1, 10):
+            for row in range(3):
+                for col in range(3):
+                    if magic[row][col] == number:
+                        result += square[row * 3 + col]
+
+    return result
+
+
+text = input("Введите текст: ")
+print("Результат шифрования:", encrypt(text))
