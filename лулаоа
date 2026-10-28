@@ -7,14 +7,14 @@ def encrypt(text):
         [4, 9, 2]
     ]
 
+    # Дополняем текст до длины, кратной 9
+    while len(text) % 9 != 0:
+        text += "Х"
+
     result = ""
 
-    # Обрабатываем текст блоками до 9 символов,
-    # не добавляя символы-заполнители.
     for start in range(0, len(text), 9):
         block = text[start:start + 9]
-
-        # Сортируем индексы символов по значениям квадрата
         positions = list(range(len(block)))
         positions.sort(
             key=lambda i: magic[i // 3][i % 3]
