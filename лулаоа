@@ -1,0 +1,30 @@
+def encrypt(text):
+    text = text.replace(" ", "").upper()
+
+    magic = [
+        [8, 1, 6],
+        [3, 5, 7],
+        [4, 9, 2]
+    ]
+
+    result = ""
+
+    # Обрабатываем текст блоками до 9 символов,
+    # не добавляя символы-заполнители.
+    for start in range(0, len(text), 9):
+        block = text[start:start + 9]
+
+        # Сортируем индексы символов по значениям квадрата
+        positions = list(range(len(block)))
+        positions.sort(
+            key=lambda i: magic[i // 3][i % 3]
+        )
+
+        for i in positions:
+            result += block[i]
+
+    return result
+
+
+message = input("Введите текст: ")
+print("Зашифрованный текст:", encrypt(message))
