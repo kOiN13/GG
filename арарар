@@ -33,3 +33,23 @@ def encrypt(text):
 
 text = input("Введите текст: ")
 print("Результат шифрования:", encrypt(text))
+
+
+
+
+
+
+
+result = ""
+
+for start in range(0, len(text), 9):
+    block = text[start:start + 9]
+    square = list(block)
+
+    for number in range(1, len(block) + 1):
+        for row in range(3):
+            for col in range(3):
+                if magic[row][col] == number:
+                    index = row * 3 + col
+                    if index < len(block):
+                        result += square[index]
