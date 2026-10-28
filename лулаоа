@@ -7,15 +7,24 @@ def encrypt(text):
         [4, 9, 2]
     ]
 
-    # Дополняем текст до длины, кратной 9
-    while len(text) % 9 != 0:
-        text += "Х"
+    remainder = len(text) % 9
+
+    if remainder != 0:
+        missing = 9 - remainder
+        print(f"Не хватает символов: {missing}")
+        extra = input(f"Введите ещё {missing} символ(ов): ")
+        text += extra.replace(" ", "").upper()
+
+    if len(text) % 9 != 0:
+        print("Ошибка: количество символов должно быть кратно 9.")
+        return ""
 
     result = ""
 
     for start in range(0, len(text), 9):
         block = text[start:start + 9]
-        positions = list(range(len(block)))
+
+        positions = list(range(9))
         positions.sort(
             key=lambda i: magic[i // 3][i % 3]
         )
@@ -26,5 +35,8 @@ def encrypt(text):
     return result
 
 
-message = input("Введите текст: ")
-print("Зашифрованный текст:", encrypt(message))
+message = input("Введите исходный текст: ")
+encrypted = encrypt(message)
+
+if encrypted:
+    print("Зашифрованный текст:", encrypted)
