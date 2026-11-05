@@ -1,29 +1,23 @@
-def create_magic_square(n):
-    square = [[0] * n for _ in range(n)]
 
-    i = 0
-    j = n // 2
+def create_table(rows, cols):
+    table = []
+    number = 1
 
-    for num in range(1, n * n + 1):
-        square[i][j] = num
+    for i in range(rows):
+        row = []
+        for j in range(cols):
+            row.append(number)
+            number += 1
+        table.append(row)
 
-        new_i = (i - 1) % n
-        new_j = (j + 1) % n
-
-        if square[new_i][new_j] != 0:
-            i = (i + 1) % n
-        else:
-            i = new_i
-            j = new_j
-
-    return square
+    return table
 
 
-def encrypt(text, n):
+def encrypt(text, rows, cols):
     text = text.replace(" ", "").upper()
 
-    magic = create_magic_square(n)
-    block_size = n * n
+    table = create_table(rows, cols)
+    block_size = rows * cols
 
     remainder = len(text) % block_size
 
@@ -34,36 +28,40 @@ def encrypt(text, n):
         text += extra.replace(" ", "").upper()
 
     if len(text) % block_size != 0:
-        print("Ошибка: количество символов должно быть кратно размеру квадрата.")
+        print("Ошибка: количество символов не подходит.")
         return ""
 
-    result = ""
+    positions = []
 
-    positions = list(range(block_size))
-    positions.sort(
-        key=lambda i: magic[i // n][i % n]
-    )
+    for i in range(rows):
+        for j in range(cols):
+            positions.append((i, j))
+
+    # Сортировка по номерам таблицы
+    positions.sort(key=lambda pos: table[pos[0]][pos[1]])
+
+    result = ""
 
     for start in range(0, len(text), block_size):
         block = text[start:start + block_size]
 
-        for i in positions:
-            result += block[i]
+        for i, j in positions:
+            result += block[i * cols + j]
 
     return result
 
 
-print("Выберите размер магического квадрата.")
-print("Размер должен быть нечётным числом: 3, 5, 7, 9...")
+print("Шифрование методом перестановки")
 
-n = int(input("Введите размер квадрата: "))
+rows = int(input("Введите количество строк: "))
+cols = int(input("Введите количество столбцов: "))
 
-if n < 3 or n % 2 == 0:
-    print("Ошибка! Введите нечётное число не меньше 3.")
+if rows < 1 or cols < 1:
+    print("Ошибка! Размеры должны быть положительными.")
 else:
     message = input("Введите исходный текст: ")
 
-    encrypted = encrypt(message, n)
+    encrypted = encrypt(message, rows, cols)
 
     if encrypted:
         print("Зашифрованный текст:", encrypted)
