@@ -16,9 +16,7 @@ def create_table(rows, cols):
 def encrypt(text, rows, cols):
     text = text.replace(" ", "").upper()
 
-    table = create_table(rows, cols)
     block_size = rows * cols
-
     remainder = len(text) % block_size
 
     if remainder != 0:
@@ -31,22 +29,46 @@ def encrypt(text, rows, cols):
         print("Ошибка: количество символов не подходит.")
         return ""
 
+    table = create_table(rows, cols)
+
+    # Получаем порядок чтения по спирали
     positions = []
+    top, bottom = 0, rows - 1
+    left, right = 0, cols - 1
 
-    for i in range(rows):
-        for j in range(cols):
-            positions.append((i, j))
+    while top <= bottom and left <= right:
+        for j in range(left, right + 1):
+            positions.append((top, j))
+        top += 1
 
-    # Сортировка по номерам таблицы
-    positions.sort(key=lambda pos: table[pos[0]][pos[1]])
+        for i in range(top, bottom + 1):
+            positions.append((i, right))
+        right -= 1
+
+        if top <= bottom:
+            for j in range(right, left - 1, -1):
+                positions.append((bottom, j))
+            bottom -= 1
+
+        if left <= right:
+            for i in range(bottom, top - 1, -1):
+                positions.append((i, left))
+            left += 1
 
     result = ""
 
     for start in range(0, len(text), block_size):
         block = text[start:start + block_size]
 
+        # Заполняем таблицу текстом по строкам
+        text_table = [
+            list(block[i * cols:(i + 1) * cols])
+            for i in range(rows)
+        ]
+
+        # Считываем символы по спирали
         for i, j in positions:
-            result += block[i * cols + j]
+            result += text_table[i][j]
 
     return result
 
