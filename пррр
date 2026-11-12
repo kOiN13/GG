@@ -1,0 +1,187 @@
+
+import inspect
+
+
+# Исходный класс
+class Musician:
+    profession = "Музыкант"
+
+    def __init__(self, name, instrument, experience):
+        self.name = name
+        self.__instrument = instrument
+        self.__experience = experience
+
+    @property
+    def instrument(self):
+        return self.__instrument
+
+    @instrument.setter
+    def instrument(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Инструмент должен быть непустой строкой!")
+        self.__instrument = value
+
+    @property
+    def experience(self):
+        return self.__experience
+
+    @experience.setter
+    def experience(self, value):
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ValueError("Опыт должен быть целым числом >= 0!")
+        self.__experience = value
+
+    def display_info(self):
+        print(f"Имя: {self.name}")
+        print(f"Инструмент: {self.instrument}")
+        print(f"Опыт: {self.experience} лет")
+
+    def practice(self):
+        print(f"{self.name} играет на инструменте: {self.instrument}")
+
+    def __del__(self):
+        print(f"Объект музыканта {self.name} удалён.")
+
+
+# Класс-наследник
+class RockMusician(Musician):
+    genre = "Рок"
+
+    def __init__(self, name, instrument, experience, band):
+        super().__init__(name, instrument, experience)
+        self.band = band
+
+    def display_info(self):
+        super().display_info()
+        print(f"Группа: {self.band}")
+
+    def practice(self):
+        print(f"{self.name} репетирует рок-музыку "
+              f"в группе {self.band}.")
+
+
+def main():
+
+    # 1. Создание объектов
+    print("\n=== 1. СОЗДАНИЕ ОБЪЕКТОВ ===")
+
+    musician = Musician("Иван", "гитара", 3)
+    rock_musician = RockMusician(
+        "Алексей", "электрогитара", 7, "Thunder"
+    )
+
+    musician.display_info()
+    print()
+    rock_musician.display_info()
+
+    # 2. Определение типа объекта
+    print("\n=== 2. ОПРЕДЕЛЕНИЕ ТИПА ОБЪЕКТА ===")
+
+    print("Тип musician:", type(musician))
+    print("Тип rock_musician:", type(rock_musician))
+
+    # 3. Просмотр атрибутов и методов
+    print("\n=== 3. ПРОСМОТР АТРИБУТОВ И МЕТОДОВ ===")
+
+    print("Атрибуты и методы Musician:")
+    print([x for x in dir(musician) if not x.startswith("_")])
+
+    print("\nАтрибуты и методы RockMusician:")
+    print([x for x in dir(rock_musician) if not x.startswith("_")])
+
+    # 4. Анализ словаря экземпляра
+    print("\n=== 4. АНАЛИЗ __dict__ ===")
+
+    print("Словарь объекта Musician:")
+    print(musician.__dict__)
+
+    print("\nСловарь объекта RockMusician:")
+    print(rock_musician.__dict__)
+
+    print("\nАтрибуты класса Musician:")
+    print(Musician.__dict__.keys())
+
+    print("\nАтрибуты класса RockMusician:")
+    print(RockMusician.__dict__.keys())
+
+    print("\nПроверка атрибутов класса:")
+    print("profession:", hasattr(musician, "profession"))
+    print("genre:", hasattr(rock_musician, "genre"))
+
+    # 5. Проверка наличия атрибутов
+    print("\n=== 5. ПРОВЕРКА НАЛИЧИЯ АТРИБУТОВ ===")
+
+    checks = [
+        "name",
+        "instrument",
+        "experience",
+        "display_info",
+        "practice",
+        "_Musician__instrument",
+        "_Musician__experience"
+    ]
+
+    for attr in checks:
+        print(f"{attr}: {hasattr(musician, attr)}")
+
+    print("\nПроверка атрибутов наследника:")
+    print("band:", hasattr(rock_musician, "band"))
+    print("practice:", hasattr(rock_musician, "practice"))
+
+    # 6. Получение значений атрибутов
+    print("\n=== 6. ПОЛУЧЕНИЕ ЗНАЧЕНИЙ АТРИБУТОВ ===")
+
+    print("Имя:", getattr(musician, "name"))
+    print("Инструмент:", getattr(musician, "instrument"))
+    print("Опыт:", getattr(musician, "experience"))
+
+    print("Приватный инструмент:",
+          getattr(musician, "_Musician__instrument"))
+
+    print("Приватный опыт:",
+          getattr(musician, "_Musician__experience"))
+
+    print("Несуществующий атрибут:",
+          getattr(musician, "nonexistent", "Атрибут отсутствует"))
+
+    method = getattr(musician, "display_info")
+    print("\nВызов метода через getattr():")
+    method()
+
+    # 7. Динамическое добавление атрибута
+    print("\n=== 7. ДИНАМИЧЕСКОЕ ДОБАВЛЕНИЕ АТРИБУТА ===")
+
+    musician.new_attr = 123
+
+    print("Новый атрибут:", musician.new_attr)
+    print("Словарь объекта:", musician.__dict__)
+    print("Наличие атрибута:", hasattr(musician, "new_attr"))
+    print("Получение значения:", getattr(musician, "new_attr"))
+
+    # 8. Попытка прямого доступа к приватному атрибуту
+    print("\n=== 8. ДОСТУП К ПРИВАТНОМУ АТРИБУТУ ===")
+
+    try:
+        print(musician.__experience)
+    except AttributeError:
+        print("Ошибка: прямой доступ к __experience невозможен!")
+
+    print("\nКорректный доступ через искажённое имя:")
+    print(getattr(musician, "_Musician__experience"))
+
+    # Дополнительное исследование через inspect
+    print("\n=== ДОПОЛНИТЕЛЬНО: МОДУЛЬ inspect ===")
+
+    print("Методы объекта Musician:")
+    for name, member in inspect.getmembers(musician, inspect.ismethod):
+        if not name.startswith("_"):
+            print(name)
+
+    print("\nИнформация о классе RockMusician:")
+    print(inspect.getmembers(RockMusician, inspect.isfunction))
+
+    print("\n=== ПРОГРАММА ЗАВЕРШЕНА ===")
+
+
+if __name__ == "__main__":
+    main()
