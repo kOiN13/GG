@@ -1,8 +1,5 @@
 
-import inspect
-
-
-# Исходный класс
+erl -noshell -eval 'io:format("~p~n", [erlang:system_info(otp_release)]), halt().'
 class Musician:
     profession = "Музыкант"
 
